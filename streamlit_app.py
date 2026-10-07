@@ -2,12 +2,14 @@
 import streamlit as st
 import pandas as pd
 
-from snowflake.snowpark.context import get_active_session
+# from snowflake.snowpark.context import get_active_session
 from snowflake.snowpark.functions import col, when_matched
 
 
 # Get the active Snowflake session
-session = get_active_session()
+cnx=st.connection("snowflake")
+# session = get_active_session()
+session = cnx.session()
 
 
 # Title
