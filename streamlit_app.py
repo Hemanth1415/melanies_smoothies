@@ -5,9 +5,8 @@ import pandas as pd
 # from snowflake.snowpark.context import get_active_session
 from snowflake.snowpark.functions import col, when_matched
 # Get data from Smoothie Froot API
-smoothiefroot_response = requests.get(
-    "https://my.smoothiefroot.com/api/fruit/watermelon"
-)
+api_url = "https://my.smoothiefroot.com/api/fruit/watermelon"
+smoothiefroot_response = requests.get(api_url)
 
 
 # Display the JSON response
