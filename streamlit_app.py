@@ -11,7 +11,7 @@ smoothiefroot_response = requests.get(
 
 
 # Display the JSON response
-st.write(smoothiefroot_response.json())
+st.text(smoothiefroot_response.json())
 
 # st.title('My parents New Healthy Diner')
 # Get the active Snowflake session
