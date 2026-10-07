@@ -53,8 +53,8 @@ ingredients_list = st.multiselect(
     "Choose Up to 5 ingredients:",
     fruit_list,max_selections=5
 )
-# st.text(smoothiefroot_response.json(),use_container_width=True)
-st.json(smoothiefroot_response.json())
+sf_df=st.dataframe(smoothiefroot_response.json(),use_container_width=True)
+# st.json(smoothiefroot_response.json())
 
 if ingredients_list:
 
