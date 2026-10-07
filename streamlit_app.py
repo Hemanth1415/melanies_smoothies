@@ -10,7 +10,7 @@ smoothiefroot_response = requests.get(api_url)
 
 
 # Display the JSON response
-st.text(smoothiefroot_response.json())
+
 
 # st.title('My parents New Healthy Diner')
 # Get the active Snowflake session
@@ -53,7 +53,7 @@ ingredients_list = st.multiselect(
     "Choose Up to 5 ingredients:",
     fruit_list,max_selections=5
 )
-
+st.text(smoothiefroot_response.json())
 
 if ingredients_list:
 
