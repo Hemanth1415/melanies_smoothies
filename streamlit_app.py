@@ -5,7 +5,7 @@ import pandas as pd
 # from snowflake.snowpark.context import get_active_session
 from snowflake.snowpark.functions import col, when_matched
 
-
+streamlit.title('My parents New Healthy Diner')
 # Get the active Snowflake session
 cnx=st.connection("snowflake")
 # session = get_active_session()
