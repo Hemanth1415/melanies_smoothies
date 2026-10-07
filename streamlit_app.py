@@ -6,6 +6,7 @@ import requests
 from snowflake.snowpark.functions import col, when_matched
 # Get data from Smoothie Froot API
 api_url = "https://my.smoothiefroot.com/api/fruit/watermelon"
+api_urls = "https://my.smoothiefroot.com/api/fruit/"
 smoothiefroot_response = requests.get(api_url)
 
 
@@ -63,7 +64,7 @@ if ingredients_list:
     for fruit_chosen in ingredients_list:
         ingredients_string += fruit_chosen + " "
         st.subheader(fruit_chosen+'Nutrition Information')
-        smoothiefroot_response = requests.get(api_url+fruit_chosen)
+        smoothiefroot_response = requests.get(api_urls+fruit_chosen)
         sf_df=st.dataframe(smoothiefroot_response.json(),use_container_width=True)
     st.write(ingredients_string)
 
