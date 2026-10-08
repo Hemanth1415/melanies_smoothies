@@ -147,19 +147,39 @@ if ingredients_list:
         # --------------------------------------------------
         # Display API response
         # --------------------------------------------------
-
+        
         if smoothiefroot_response.status_code == 200:
-
+        
             st.dataframe(
                 smoothiefroot_response.json(),
                 use_container_width=True
             )
-
+        
         else:
-
+        
             st.error(
                 f"Unable to get nutrition information "
                 f"for {fruit_chosen}."
+            )
+        
+            st.write(
+                "SEARCH_ON value:",
+                search_on
+            )
+        
+            st.write(
+                "API URL:",
+                api_url
+            )
+        
+            st.write(
+                "API status code:",
+                smoothiefroot_response.status_code
+            )
+        
+            st.write(
+                "API response:",
+                smoothiefroot_response.text
             )
 
 
