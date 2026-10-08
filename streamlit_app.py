@@ -1,4 +1,4 @@
-```python
+
 # Import Python packages
 import streamlit as st
 import pandas as pd
@@ -7,18 +7,12 @@ import requests
 from snowflake.snowpark.functions import col, when_matched
 
 
-# --------------------------------------------------
-# Get the active Snowflake session
-# --------------------------------------------------
-
+# Get the Snowflake session
 cnx = st.connection("snowflake")
 session = cnx.session()
 
 
-# --------------------------------------------------
 # Get fruit options from Snowflake
-# --------------------------------------------------
-
 fruit_options = (
     session.table("smoothies.public.fruit_options")
     .select(
@@ -31,26 +25,17 @@ fruit_options = (
 
 # Create a dictionary:
 # FRUIT_NAME -> SEARCH_ON
-#
-# Example:
-# Watermelon -> watermelon
-# Apple      -> apple
-# Strawberry -> strawberry
-
 fruit_search_map = {
     row["FRUIT_NAME"]: row["SEARCH_ON"]
     for row in fruit_options
 }
 
 
-# Create the list of fruit names for the Streamlit GUI
+# Create list of fruit names
 fruit_list = list(fruit_search_map.keys())
 
 
-# --------------------------------------------------
 # Title
-# --------------------------------------------------
-
 st.title(
     f":cup_with_straw: Example Streamlit App :cup_with_straw: "
     f"{st.__version__}"
@@ -63,10 +48,7 @@ st.write(
 )
 
 
-# --------------------------------------------------
 # Smoothie name
-# --------------------------------------------------
-
 name_on_order = st.text_input(
     "Name on the smoothie:"
 )
@@ -77,10 +59,7 @@ st.write(
 )
 
 
-# --------------------------------------------------
 # Select ingredients
-# --------------------------------------------------
-
 ingredients_list = st.multiselect(
     "Choose Up to 5 ingredients:",
     fruit_list,
@@ -88,17 +67,14 @@ ingredients_list = st.multiselect(
 )
 
 
-# --------------------------------------------------
 # Display nutrition information
-# --------------------------------------------------
-
 if ingredients_list:
 
     ingredients_string = ""
 
     for fruit_chosen in ingredients_list:
 
-        # Add selected fruit to order string
+        # Add fruit to ingredients string
         ingredients_string += fruit_chosen + " "
 
         # Display fruit name
@@ -106,10 +82,10 @@ if ingredients_list:
             fruit_chosen + " Nutrition Information"
         )
 
-        # Get SEARCH_ON value from Snowflake
+        # Get SEARCH_ON value
         search_value = fruit_search_map[fruit_chosen]
 
-        # Build API URL using SEARCH_ON
+        # Build API URL
         api_url = (
             "https://my.smoothiefroot.com/api/fruit/"
             + search_value
@@ -118,7 +94,7 @@ if ingredients_list:
         # Call API
         smoothiefroot_response = requests.get(api_url)
 
-        # Check if API call was successful
+        # Display API response
         if smoothiefroot_response.status_code == 200:
 
             st.dataframe(
@@ -129,21 +105,18 @@ if ingredients_list:
         else:
 
             st.error(
-                f"Unable to get nutrition information for "
-                f"{fruit_chosen}."
+                f"Unable to get nutrition information "
+                f"for {fruit_chosen}."
             )
 
-    # Display ingredients string
+    # Display selected ingredients
     st.write(
         "Selected ingredients:",
         ingredients_string
     )
 
 
-    # --------------------------------------------------
     # Insert statement
-    # --------------------------------------------------
-
     my_insert_stmt = """
         INSERT INTO smoothies.public.orders
         (ingredients, name_on_order)
@@ -151,10 +124,7 @@ if ingredients_list:
     """
 
 
-    # --------------------------------------------------
     # Submit Order button
-    # --------------------------------------------------
-
     time_to_insert = st.button(
         "Submit Order"
     )
@@ -176,10 +146,7 @@ if ingredients_list:
         )
 
 
-# --------------------------------------------------
 # Display unfilled orders
-# --------------------------------------------------
-
 st.subheader("Orders to be Filled")
 
 
@@ -192,10 +159,7 @@ orders_df = (
 )
 
 
-# --------------------------------------------------
-# Only display the editor if there are orders
-# --------------------------------------------------
-
+# Display editor if there are orders
 if not orders_df.empty:
 
     editable_df = st.data_editor(
@@ -205,19 +169,13 @@ if not orders_df.empty:
     )
 
 
-    # --------------------------------------------------
     # Submit changes button
-    # --------------------------------------------------
-
-    submitted = st.button(
-        "Submit"
-    )
+    submitted = st.button("Submit")
 
 
     if submitted:
 
-        # Convert edited Pandas DataFrame
-        # back to Snowpark DataFrame
+        # Convert Pandas DataFrame back to Snowpark DataFrame
         edited_dataset = session.create_dataframe(
             editable_df
         )
@@ -229,10 +187,7 @@ if not orders_df.empty:
         )
 
 
-        # --------------------------------------------------
-        # Merge the changes
-        # --------------------------------------------------
-
+        # Merge changes
         og_dataset.merge(
             edited_dataset,
             (
