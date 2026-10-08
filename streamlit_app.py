@@ -18,6 +18,13 @@ smoothiefroot_response = requests.get(api_url)
 cnx=st.connection("snowflake")
 # session = get_active_session()
 session = cnx.session()
+my_dataframe=session.table('smoothies.public.fruit_options').select(col('FRUIT_NAME'),col('SEARCH_OH'))
+sf_dfs=st.dataframe(my_dataframe,use_container_width=True)
+st.stop()
+
+pd_df=my_dataframe.to_pandas()
+st.dataframe(pd_df)
+st.stop()
 
 
 # Title
