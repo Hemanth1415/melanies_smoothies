@@ -105,16 +105,17 @@ if ingredients_list:
         # --------------------------------------------------
 
         search_on = fruit_search_map[fruit_chosen]
+        search_ons=pd_df.loc[pd_df['FRUIT_NAME']==fruit_chosen,'SEARCH_ON'].iloc[0]
 
 
-        # Display SEARCH_ON value
-        st.write(
-            "The search value for ",
-            fruit_chosen,
-            " is ",
-            search_on,
-            "."
-        )
+        # # Display SEARCH_ON value
+        # st.write(
+        #     "The search value for ",
+        #     fruit_chosen,
+        #     " is ",
+        #     search_on,
+        #     "."
+        # )
 
 
         # --------------------------------------------------
@@ -131,8 +132,8 @@ if ingredients_list:
         # --------------------------------------------------
 
         api_url = (
-            "https://my.smoothiefroot.com/api/fruit/"
-            + search_on
+            "https://my.smoothiefroot.com/api/fruit/{search_ons}"
+            # + search_on
         )
 
 
