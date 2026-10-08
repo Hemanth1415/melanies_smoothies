@@ -1,18 +1,22 @@
-
 # Import Python packages
 import streamlit as st
-import pandas as pd
 import requests
 
 from snowflake.snowpark.functions import col, when_matched
 
 
+# --------------------------------------------------
 # Get the Snowflake session
+# --------------------------------------------------
+
 cnx = st.connection("snowflake")
 session = cnx.session()
 
 
+# --------------------------------------------------
 # Get fruit options from Snowflake
+# --------------------------------------------------
+
 fruit_options = (
     session.table("smoothies.public.fruit_options")
     .select(
@@ -23,19 +27,28 @@ fruit_options = (
 )
 
 
+# --------------------------------------------------
 # Create a dictionary:
 # FRUIT_NAME -> SEARCH_ON
+# --------------------------------------------------
+
 fruit_search_map = {
     row["FRUIT_NAME"]: row["SEARCH_ON"]
     for row in fruit_options
 }
 
 
+# --------------------------------------------------
 # Create list of fruit names
+# --------------------------------------------------
+
 fruit_list = list(fruit_search_map.keys())
 
 
+# --------------------------------------------------
 # Title
+# --------------------------------------------------
+
 st.title(
     f":cup_with_straw: Example Streamlit App :cup_with_straw: "
     f"{st.__version__}"
@@ -48,7 +61,10 @@ st.write(
 )
 
 
+# --------------------------------------------------
 # Smoothie name
+# --------------------------------------------------
+
 name_on_order = st.text_input(
     "Name on the smoothie:"
 )
@@ -59,7 +75,10 @@ st.write(
 )
 
 
+# --------------------------------------------------
 # Select ingredients
+# --------------------------------------------------
+
 ingredients_list = st.multiselect(
     "Choose Up to 5 ingredients:",
     fruit_list,
@@ -67,7 +86,10 @@ ingredients_list = st.multiselect(
 )
 
 
+# --------------------------------------------------
 # Display nutrition information
+# --------------------------------------------------
+
 if ingredients_list:
 
     ingredients_string = ""
@@ -76,27 +98,57 @@ if ingredients_list:
 
         # Add fruit to ingredients string
         ingredients_string += fruit_chosen + " "
-        search_on=pd_df.loc[pd_df['FRUIT_NAME'] == fruit_chosen, 'SEARCH_ON'].iloc[0]
-        st.write('The search value for ', fruit_chosen,' is ', search_on, '.')
 
+
+        # --------------------------------------------------
+        # Get SEARCH_ON value
+        # --------------------------------------------------
+
+        search_on = fruit_search_map[fruit_chosen]
+
+
+        # Display SEARCH_ON value
+        st.write(
+            "The search value for ",
+            fruit_chosen,
+            " is ",
+            search_on,
+            "."
+        )
+
+
+        # --------------------------------------------------
         # Display fruit name
+        # --------------------------------------------------
+
         st.subheader(
             fruit_chosen + " Nutrition Information"
         )
 
-        # Get SEARCH_ON value
-        search_value = fruit_search_map[fruit_chosen]
 
-        # Build API URL
+        # --------------------------------------------------
+        # Build API URL using SEARCH_ON
+        # --------------------------------------------------
+
         api_url = (
             "https://my.smoothiefroot.com/api/fruit/"
-            + search_value
+            + search_on
         )
 
-        # Call API
-        smoothiefroot_response = requests.get(api_url)
 
+        # --------------------------------------------------
+        # Call API
+        # --------------------------------------------------
+
+        smoothiefroot_response = requests.get(
+            api_url
+        )
+
+
+        # --------------------------------------------------
         # Display API response
+        # --------------------------------------------------
+
         if smoothiefroot_response.status_code == 200:
 
             st.dataframe(
@@ -111,14 +163,21 @@ if ingredients_list:
                 f"for {fruit_chosen}."
             )
 
+
+    # --------------------------------------------------
     # Display selected ingredients
+    # --------------------------------------------------
+
     st.write(
         "Selected ingredients:",
         ingredients_string
     )
 
 
+    # --------------------------------------------------
     # Insert statement
+    # --------------------------------------------------
+
     my_insert_stmt = """
         INSERT INTO smoothies.public.orders
         (ingredients, name_on_order)
@@ -126,7 +185,10 @@ if ingredients_list:
     """
 
 
+    # --------------------------------------------------
     # Submit Order button
+    # --------------------------------------------------
+
     time_to_insert = st.button(
         "Submit Order"
     )
@@ -148,8 +210,13 @@ if ingredients_list:
         )
 
 
+# --------------------------------------------------
 # Display unfilled orders
-st.subheader("Orders to be Filled")
+# --------------------------------------------------
+
+st.subheader(
+    "Orders to be Filled"
+)
 
 
 orders_df = (
@@ -161,7 +228,10 @@ orders_df = (
 )
 
 
+# --------------------------------------------------
 # Display editor if there are orders
+# --------------------------------------------------
+
 if not orders_df.empty:
 
     editable_df = st.data_editor(
@@ -171,25 +241,40 @@ if not orders_df.empty:
     )
 
 
+    # --------------------------------------------------
     # Submit changes button
-    submitted = st.button("Submit")
+    # --------------------------------------------------
+
+    submitted = st.button(
+        "Submit"
+    )
 
 
     if submitted:
 
-        # Convert Pandas DataFrame back to Snowpark DataFrame
+        # --------------------------------------------------
+        # Convert edited Pandas DataFrame
+        # back to Snowpark DataFrame
+        # --------------------------------------------------
+
         edited_dataset = session.create_dataframe(
             editable_df
         )
 
 
+        # --------------------------------------------------
         # Original ORDERS table
+        # --------------------------------------------------
+
         og_dataset = session.table(
             "smoothies.public.orders"
         )
 
 
+        # --------------------------------------------------
         # Merge changes
+        # --------------------------------------------------
+
         og_dataset.merge(
             edited_dataset,
             (
@@ -211,9 +296,9 @@ if not orders_df.empty:
             "Order status updated successfully! ✅"
         )
 
+
 else:
 
     st.info(
         "There are no unfilled orders."
     )
-
