@@ -50,8 +50,7 @@ fruit_list = list(fruit_search_map.keys())
 # --------------------------------------------------
 
 st.title(
-    f":cup_with_straw: Example Streamlit App :cup_with_straw: "
-    f"{st.__version__}"
+    f":cup_with_straw: Customize your smoothie! :cup_with_straw: "
 )
 
 st.write(
